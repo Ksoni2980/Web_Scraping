@@ -13,6 +13,7 @@ dates = []
 for j in range(1,4):
     URL = "https://www.moneycontrol.com/broker-research/stocks-" + str(j) + ".html"
     r = requests.get(URL) 
+
     soup = BeautifulSoup(r.content, 'html5lib') 
     all = soup.findAll('p', attrs={'class':'MT5'})
     stocks += [x.text.rstrip() for x in all[:20]]
@@ -40,10 +41,11 @@ for stock in stocks:
     
     Target.append(stock[1].split(':')[0][10:])
     Madeby.append(stock[1].split(':')[1])
-    dates = pd.to_datetime(dates)
+    
     i+=1
 
-current = (date.today()-timedelta(days=0)).isoformat()
+dates = pd.to_datetime(dates)
+current = (date.today()-timedelta(days = 0)).isoformat()
 dates = list(dates)
 
 for i in to_delete[::-1]:
@@ -55,12 +57,11 @@ df = pd.DataFrame(d)
 df = df[df['Date'] == current]
 
 
-
-recipients = ["""comma separated emails"""] 
+recipients = ["comma separated email addresses"] 
 emaillist = [elem.strip().split(',') for elem in recipients]
 msg = MIMEMultipart()
 msg['Subject'] = "Daily tips"
-msg['From'] = 'ksoni2980@gmail.com'
+msg['From'] = "sender's email address"
 
 
 html = """\
@@ -77,6 +78,6 @@ msg.attach(part1)
 
 server = smtplib.SMTP('smtp.gmail.com', 587)
 server.starttls()  
-server.login("enter sender's email addressemail-address", "enter password") 
+server.login("sender's email address", "password") 
 server.sendmail(msg['From'], emaillist , msg.as_string())
 server.quit()
